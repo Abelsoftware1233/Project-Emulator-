@@ -106,3 +106,12 @@ document.getElementById('power-btn').addEventListener('click', () => {
 
 // Render eerste frame (zwart scherm)
 snes.render();
+
+// Voeg dit toe aan je SNES class in emulator.js
+decodeSNESColor(color16) {
+    // SNES: 0BBBBBGGGGGRRRRR
+    const r = (color16 & 0x1F) << 3;
+    const g = ((color16 >> 5) & 0x1F) << 3;
+    const b = ((color16 >> 10) & 0x1F) << 3;
+    return [r, g, b, 255]; // RGBA
+}
