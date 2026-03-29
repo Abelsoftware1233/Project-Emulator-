@@ -1,88 +1,120 @@
 :root {
-    --bg-color: #121212;
-    --panel-color: #1e1e1e;
-    --accent-color: #ff4757;
-    --text-color: #e0e0e0;
+    --bg-color: #0f0f13;
+    --panel-color: #1a1a20;
+    --accent-color: #ff4757; /* Power Red */
+    --snes-purple-light: #b0a0ff; /* X & Y knoppen */
+    --snes-purple-dark: #6a5acd;  /* A & B knoppen */
+    --text-color: #f0f0f0;
+    --glass: rgba(255, 255, 255, 0.05);
 }
 
 body, html {
     margin: 0; padding: 0;
     height: 100%; background: var(--bg-color);
-    color: var(--text-color); font-family: sans-serif;
+    color: var(--text-color); font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     overflow: hidden; touch-action: none;
+    user-select: none;
 }
 
 .app-container {
     display: flex; flex-direction: column;
-    height: 100vh; padding: 10px; box-sizing: border-box;
+    height: 100vh; max-width: 500px; margin: 0 auto;
+    padding: 15px; box-sizing: border-box;
+    background: linear-gradient(180deg, #16161d 0%, #0f0f13 100%);
 }
 
-/* Beeldscherm Sectie */
+/* --- Beeldscherm Sectie --- */
 .display-section {
     position: relative; flex: 1;
     display: flex; justify-content: center; align-items: center;
-    background: #000; border: 4px solid #333; border-radius: 10px;
+    background: #000; 
+    border: 8px solid #2a2a35; 
+    border-radius: 15px;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.5);
+    overflow: hidden;
 }
 
 #screen {
-    max-width: 100%; max-height: 100%;
+    width: 100%; height: auto;
+    aspect-ratio: 256 / 224;
     image-rendering: pixelated;
+    z-index: 1;
+}
+
+/* Scanline Effect voor Retro Gevoel */
+.display-section::after {
+    content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+                linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+    background-size: 100% 3px, 3px 100%;
+    pointer-events: none; z-index: 2;
 }
 
 #osd {
-    position: absolute; top: 10px; left: 10px;
-    font-size: 11px; color: #0f0; font-family: monospace;
+    position: absolute; top: 12px; left: 12px;
+    font-size: 12px; color: #00ff41; font-family: 'Courier New', monospace;
+    text-shadow: 0 0 5px #00ff41; z-index: 3;
 }
 
-/* Systeem Bediening Sectie */
+/* --- Systeem Bediening --- */
 .ui-controls {
-    display: flex; flex-direction: column; gap: 8px;
-    padding: 10px; background: var(--panel-color); border-radius: 10px; margin-bottom: 10px;
+    display: flex; flex-direction: column; gap: 10px;
+    padding: 15px; background: var(--panel-color); 
+    border-radius: 15px; margin: 15px 0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
-.control-row { display: flex; justify-content: space-between; gap: 8px; }
+.control-row { display: flex; justify-content: space-between; gap: 10px; }
 
 .btn {
-    padding: 8px 15px; border-radius: 5px; border: none;
-    font-weight: bold; cursor: pointer; color: white; background: #444;
-    font-size: 12px; text-align: center;
+    padding: 10px; border-radius: 8px; border: none;
+    font-weight: bold; cursor: pointer; color: white; 
+    background: linear-gradient(145deg, #3a3a45, #23232b);
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+    box-shadow: 0 4px #15151a; transition: all 0.1s;
 }
 
-.tiny { font-size: 10px; padding: 6px 10px; flex: 1; }
-.danger { background: var(--accent-color); }
-.full-width { width: 100%; }
+.btn:active { transform: translateY(2px); box-shadow: 0 2px #15151a; }
+.tiny { flex: 1; }
+.danger { background: linear-gradient(145deg, #ff4757, #cc3b48); }
 
-.save-load-group { display: flex; gap: 8px; flex: 1; }
-
-/* Virtuele SNES Gamepad Sectie */
+/* --- Virtuele Gamepad --- */
 .gamepad-viewport {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 20px; background: var(--panel-color); border-radius: 20px;
-    gap: 15px; /* Ruimte tussen D-Pad en Actieknoppen */
+    padding: 25px 15px; background: var(--panel-color); 
+    border-radius: 30px 30px 15px 15px;
+    box-shadow: inset 0 2px 10px rgba(255,255,255,0.05);
 }
 
-.dpad { display: grid; grid-template-areas: ". u ." "l . r" ". d ."; gap: 5px; }
-.up { grid-area: u; } .left { grid-area: l; } .right { grid-area: r; } .down { grid-area: d; }
+/* D-Pad Layout */
+.dpad { display: grid; grid-template-areas: ". u ." "l . r" ". d ."; gap: 4px; }
 
-/* De Nauwkeurige SNES Diamant Grid */
+/* Knoppen Kleuren & Design */
+.ctrl-btn {
+    width: 65px; height: 65px; border-radius: 50%; border: none;
+    background: #2d2d38; color: rgba(255,255,255,0.8); 
+    font-weight: 900; font-size: 22px;
+    box-shadow: 0 6px #1a1a21, inset 0 2px 5px rgba(255,255,255,0.1);
+    transition: 0.05s;
+}
+
+.ctrl-btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 2px #1a1a21;
+    background: #3d3d4d;
+}
+
+/* SNES Specifieke Kleuren */
+.x-btn, .y-btn { background: var(--snes-purple-light); color: #4b0082; }
+.a-btn, .b-btn { background: var(--snes-purple-dark); color: #fff; }
+
 .action-btns-diamond {
     display: grid;
-    grid-template-areas: ". x" "y ." "a b"; /* Diamanten-vorm: .X Y. AB */
-    gap: 10px;
-    align-content: center;
+    grid-template-areas: ". x" "y ." "a b";
+    gap: 8px;
+    transform: rotate(-10deg); /* Lichte draai voor ergonomie */
 }
 
-.x-btn { grid-area: x; }
-.y-btn { grid-area: y; }
-.b-btn { grid-area: b; }
-.a-btn { grid-area: a; }
-
-/* Basisstijl voor alle controller knoppen */
-.ctrl-btn {
-    width: 60px; height: 60px; border-radius: 50%; border: none;
-    background: #555; color: white; font-weight: bold; font-size: 20px;
-    display: flex; align-items: center; justify-content: center;
-    transition: transform 0.05s;
-}
-
-.ctrl-btn:active { background: #888; transform: scale(0.9); }
+/* Pijltjes D-Pad design */
+.up, .down, .left, .right { background: #222; border-radius: 10px; }
+.up { grid-area: u; } .left { grid-area: l; } .right { grid-area: r; } .down { grid-area: d; }
