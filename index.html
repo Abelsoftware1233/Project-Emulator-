@@ -3,47 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SNES Emulator | Echo AI</title>
+    <title>Echo SNES Emulator</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="app-container">
-        <header>
-            <h1>Echo SNES</h1>
-            <div id="status">Ready to load...</div>
-        </header>
+    <div class="app">
+        <div class="display-section">
+            <canvas id="screen" width="256" height="224"></canvas>
+            <div id="osd">NO ROM LOADED</div>
+        </div>
 
-        <main class="emu-viewport">
-            <canvas id="snes-screen" width="256" height="224"></canvas>
-        </main>
+        <div class="ui-controls">
+            <label class="btn file-btn">
+                LOAD ROM <input type="file" id="rom-input" hidden>
+            </label>
+            <button id="power-btn" class="btn danger">POWER</button>
+        </div>
 
-        <section class="controls-ui">
-            <div class="file-actions">
-                <label for="rom-upload" class="btn primary">LOAD ROM</label>
-                <input type="file" id="rom-upload" accept=".sfc,.smc" hidden>
+        <div class="gamepad">
+            <div class="dpad">
+                <button class="ctrl-btn up" data-key="up">↑</button>
+                <button class="ctrl-btn left" data-key="left">←</button>
+                <button class="ctrl-btn right" data-key="right">→</button>
+                <button class="ctrl-btn down" data-key="down">↓</button>
             </div>
-            
-            <div class="playback-controls">
-                <button id="start-btn" class="btn success">START</button>
-                <button id="pause-btn" class="btn">PAUSE</button>
-                <button id="reset-btn" class="btn danger">RESET</button>
+            <div class="action-btns">
+                <button class="ctrl-btn b-btn" data-key="b">B</button>
+                <button class="ctrl-btn a-btn" data-key="a">A</button>
             </div>
-        </section>
-
-        <section class="virtual-gamepad">
-            <div class="d-pad">
-                <button class="btn pad-up" data-key="up">↑</button>
-                <button class="btn pad-left" data-key="left">←</button>
-                <button class="btn pad-right" data-key="right">→</button>
-                <button class="btn pad-down" data-key="down">↓</button>
-            </div>
-            <div class="action-buttons">
-                <button class="btn btn-a" data-key="a">A</button>
-                <button class="btn btn-b" data-key="b">B</button>
-            </div>
-        </section>
+        </div>
     </div>
-
     <script src="emulator.js"></script>
 </body>
 </html>
