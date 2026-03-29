@@ -3,14 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Abel123 SNES Emulator Core</title>
+    <title>ECHO AI - SNES Hack Core</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="app-container">
         <div class="display-section">
             <canvas id="screen" width="256" height="224"></canvas>
-            <div id="osd">NO ROM LOADED</div>
+            <div id="osd">SYSTEM READY</div>
+            
+            <div id="debug-info">
+                OFFSET: <span id="val-offset">0</span><br>
+                ZOOM: <span id="val-zoom">256</span>
+            </div>
         </div>
 
         <div class="ui-controls">
@@ -23,7 +28,7 @@
                     <button class="btn tiny" onclick="snes.loadState()">LOAD</button>
                 </div>
             </div>
-            <button id="power-btn" class="btn danger full-width">POWER</button>
+            <button id="power-btn" class="btn danger full-width">POWER / RESET</button>
         </div>
 
         <div class="gamepad-viewport">
@@ -42,6 +47,17 @@
             </div>
         </div>
     </div>
+
     <script src="emulator.js"></script>
+    
+    <script>
+        // Update de debug waarden op het scherm
+        setInterval(() => {
+            if (window.snes) {
+                document.getElementById('val-offset').innerText = snes.hackOffset || 0;
+                document.getElementById('val-zoom').innerText = snes.m7 ? snes.m7.a : 256;
+            }
+        }, 100);
+    </script>
 </body>
 </html>
