@@ -1,29 +1,27 @@
 :root {
-    --bg: #1a1a1a;
-    --panel: #2a2a2a;
-    --accent: #ff4757;
-    --btn-shadow: #111;
+    --bg-color: #121212;
+    --panel-color: #1e1e1e;
+    --accent-color: #ff4757;
+    --text-color: #e0e0e0;
 }
 
 body, html {
     margin: 0; padding: 0;
-    height: 100%; background: var(--bg);
-    color: white; font-family: sans-serif;
+    height: 100%; background: var(--bg-color);
+    color: var(--text-color); font-family: sans-serif;
     overflow: hidden; touch-action: none;
 }
 
-/* De Hoofdcontainer */
-.app {
+.app-container {
     display: flex; flex-direction: column;
     height: 100vh; padding: 10px; box-sizing: border-box;
 }
 
-/* Het Scherm */
+/* Beeldscherm Sectie */
 .display-section {
     position: relative; flex: 1;
     display: flex; justify-content: center; align-items: center;
     background: #000; border: 4px solid #333; border-radius: 10px;
-    overflow: hidden;
 }
 
 #screen {
@@ -33,77 +31,58 @@ body, html {
 
 #osd {
     position: absolute; top: 10px; left: 10px;
-    font-size: 12px; color: #0f0; font-family: monospace;
+    font-size: 11px; color: #0f0; font-family: monospace;
 }
 
-/* Systeem Knoppen (Load/Save/Power) */
+/* Systeem Bediening Sectie */
 .ui-controls {
-    display: flex; justify-content: center; gap: 8px; padding: 15px 0;
-    flex-wrap: wrap;
+    display: flex; flex-direction: column; gap: 8px;
+    padding: 10px; background: var(--panel-color); border-radius: 10px; margin-bottom: 10px;
 }
+
+.control-row { display: flex; justify-content: space-between; gap: 8px; }
 
 .btn {
-    padding: 10px 15px; border-radius: 5px; border: none;
+    padding: 8px 15px; border-radius: 5px; border: none;
     font-weight: bold; cursor: pointer; color: white; background: #444;
-    font-size: 12px; transition: background 0.2s;
+    font-size: 12px; text-align: center;
 }
 
-.btn:active { background: #666; }
-.danger { background: var(--accent); }
+.tiny { font-size: 10px; padding: 6px 10px; flex: 1; }
+.danger { background: var(--accent-color); }
+.full-width { width: 100%; }
 
-/* --- HET GAMEPAD GEDEELTE --- */
-.gamepad {
+.save-load-group { display: flex; gap: 8px; flex: 1; }
+
+/* Virtuele SNES Gamepad Sectie */
+.gamepad-viewport {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 25px 20px; background: var(--panel); border-radius: 20px 20px 0 0;
-    margin-top: auto;
+    padding: 20px; background: var(--panel-color); border-radius: 20px;
+    gap: 15px; /* Ruimte tussen D-Pad en Actieknoppen */
 }
 
-/* De D-Pad: Perfect 3x3 Grid */
-.dpad {
+.dpad { display: grid; grid-template-areas: ". u ." "l . r" ". d ."; gap: 5px; }
+.up { grid-area: u; } .left { grid-area: l; } .right { grid-area: r; } .down { grid-area: d; }
+
+/* De Nauwkeurige SNES Diamant Grid */
+.action-btns-diamond {
     display: grid;
-    grid-template-columns: repeat(3, 50px);
-    grid-template-rows: repeat(3, 50px);
-    gap: 2px;
+    grid-template-areas: ". x" "y ." "a b"; /* Diamanten-vorm: .X Y. AB */
+    gap: 10px;
+    align-content: center;
 }
+
+.x-btn { grid-area: x; }
+.y-btn { grid-area: y; }
+.b-btn { grid-area: b; }
+.a-btn { grid-area: a; }
 
 /* Basisstijl voor alle controller knoppen */
 .ctrl-btn {
-    width: 50px; height: 50px; 
-    background: #333; border: none;
-    color: white; font-weight: bold; font-size: 20px;
+    width: 60px; height: 60px; border-radius: 50%; border: none;
+    background: #555; color: white; font-weight: bold; font-size: 20px;
     display: flex; align-items: center; justify-content: center;
-    cursor: pointer; touch-action: manipulation;
     transition: transform 0.05s;
 }
 
-/* Specifiek voor de pijltjes */
-.dpad .ctrl-btn {
-    border-radius: 8px;
-    box-shadow: 0 4px 0 var(--btn-shadow);
-}
-
-.dpad-center {
-    background: #333; width: 50px; height: 50px;
-}
-
-/* Actie knoppen (A en B) */
-.action-btns {
-    display: flex; gap: 15px;
-}
-
-.action-btns .ctrl-btn {
-    width: 65px; height: 65px;
-    border-radius: 50%;
-    background: #555;
-    box-shadow: 0 5px 0 #222;
-    font-size: 22px;
-}
-
-/* Indruk-effect voor alle controller knoppen */
-.ctrl-btn:active {
-    transform: translateY(3px);
-    box-shadow: 0 1px 0 var(--btn-shadow) !important;
-    filter: brightness(1.3);
-}
-
-.spacer { width: 50px; height: 50px; }
+.ctrl-btn:active { background: #888; transform: scale(0.9); }
