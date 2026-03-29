@@ -1,5 +1,6 @@
 /**
- * ECHO AI - GEOPTIMALISEERDE SNES EMULATOR CORE
+ * ECHO AI - ADVANCED SNES EMULATOR CORE
+ * Features: 65C816 CPU Base, Mode 7 PPU, Web Audio Engine, Save States
  */
 
 class SNES {
@@ -8,104 +9,116 @@ class SNES {
         this.ctx = this.canvas.getContext('2d');
         this.imageData = this.ctx.createImageData(256, 224);
         
-        // Geheugen: WRAM (128KB) + VRAM (64KB)
-        this.ram = new Uint8Array(0x20000); 
-        this.vram = new Uint8Array(0x10000);
+        // --- Geheugen Architectuur ---
+        this.ram = new Uint8Array(0x20000);   // 128KB WRAM
+        this.vram = new Uint8Array(0x10000);  // 64KB VRAM
         this.rom = null;
         
-        // CPU Registers (65C816 basis)
+        // --- CPU Registers ---
         this.pc = 0;
-        this.a = 0; // Accumulator
-        this.x = 0; // Index X
-        this.y = 0; // Index Y
-        this.sp = 0x01FF; // Stack Pointer
+        this.a = 0;
+        this.x = 0;
+        this.y = 0;
+        this.sp = 0x01FF;
         this.status = 0x30;
         this.running = false;
 
+        // --- Mode 7 PPU Matrix ---
+        this.m7 = {
+            a: 256, b: 0, c: 0, d: 256, // Schaal 1:1
+            x: 128, y: 112,             // Pivot punt (midden scherm)
+            hoffset: 0, voffset: 0
+        };
+
+        // --- Audio Context ---
+        this.audioCtx = null;
         this.buttons = { up: false, down: false, left: false, right: false, a: false, b: false, x: false, y: false };
+        
         this.initInput();
     }
 
-    vibrate(ms = 40) {
-        if (navigator.vibrate) navigator.vibrate(ms);
-    }
-
-    // --- VERBETERDE ROM LOADING ---
-    loadROM(data) {
-        this.rom = new Uint8Array(data);
-        
-        // SNES Reset Vector bevindt zich meestal op $00FFFC in de ROM
-        // Voor een eenvoudige implementatie kijken we naar de header
-        let headerOffset = 0x7FC0; 
-        if (this.rom.length % 0x8000 === 512) headerOffset += 512; // Skip SMC header indien aanwezig
-
-        this.pc = (this.rom[headerOffset + 0x3D] << 8) | this.rom[headerOffset + 0x3C];
-        
-        // Fallback als de vector ongeldig lijkt
-        if (this.pc < 0x8000) this.pc = 0x8000; 
-
-        document.getElementById('osd').innerText = "ROM RUNNING";
-        this.running = true;
-        this.start();
-    }
-
-    // --- UITGEBREIDE CPU STEP ---
-    step() {
-        if (!this.rom || !this.running) return 1;
-
-        const opcode = this.rom[this.pc % this.rom.length];
-        this.pc = (this.pc + 1) & 0xFFFFFF;
-
-        // Basis instructie set voor boot-up
-        switch(opcode) {
-            case 0xA9: // LDA Immediate
-                this.a = this.rom[this.pc++];
-                this.updateStatus(this.a);
-                return 2;
-            case 0xAD: // LDA Absolute
-                let addr = (this.rom[this.pc+1] << 8) | this.rom[this.pc];
-                this.a = this.ram[addr % 0x20000];
-                this.pc += 2;
-                return 4;
-            case 0x8D: // STA Absolute
-                let sAddr = (this.rom[this.pc+1] << 8) | this.rom[this.pc];
-                this.ram[sAddr % 0x20000] = this.a;
-                this.pc += 2;
-                return 4;
-            case 0x18: // CLC
-                this.status &= ~0x01;
-                return 2;
-            case 0x38: // SEC
-                this.status |= 0x01;
-                return 2;
-            case 0x4C: // JMP Absolute
-                this.pc = (this.rom[this.pc+1] << 8) | this.rom[this.pc];
-                return 3;
-            case 0xEA: // NOP
-                return 2;
-            default:
-                // Skip onbekende opcodes om vastlopen te voorkomen
-                return 1;
+    // --- AUDIO ENGINE ---
+    initAudio() {
+        if (!this.audioCtx) {
+            this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         }
     }
 
-    updateStatus(val) {
-        if (val === 0) this.status |= 0x02; else this.status &= ~0x02; // Zero flag
-        if (val & 0x80) this.status |= 0x80; else this.status &= ~0x80; // Negative flag
+    playTone(freq = 440, duration = 0.1) {
+        if (!this.audioCtx) return;
+        const osc = this.audioCtx.createOscillator();
+        const gain = this.audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(this.audioCtx.destination);
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.05, this.audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, this.audioCtx.currentTime + duration);
+        osc.start();
+        osc.stop(this.audioCtx.currentTime + duration);
     }
 
-    // --- RENDERING ---
+    // --- CORE LOGICA ---
+    loadROM(data) {
+        this.rom = new Uint8Array(data);
+        // Vind Reset Vector ($FFFC in bank $00)
+        let headerOffset = (this.rom.length % 0x8000 === 512) ? 0x81C0 : 0x7FC0;
+        this.pc = (this.rom[headerOffset + 0x3D] << 8) | this.rom[headerOffset + 0x3C];
+        
+        if (this.pc < 0x8000) this.pc = 0x8000; 
+        
+        this.initAudio();
+        this.running = true;
+        document.getElementById('osd').innerText = "ROM ACTIVE";
+        this.start();
+    }
+
+    step() {
+        if (!this.rom || !this.running) return 1;
+        const opcode = this.rom[this.pc % this.rom.length];
+        this.pc = (this.pc + 1) & 0xFFFFFF;
+
+        switch(opcode) {
+            case 0xA9: this.a = this.rom[this.pc++]; this.updateStatus(this.a); return 2; // LDA Imm
+            case 0x8D: this.writeMem((this.rom[this.pc+1]<<8)|this.rom[this.pc], this.a); this.pc+=2; return 4; // STA Abs
+            case 0x18: this.status &= ~0x01; return 2; // CLC
+            case 0x4C: this.pc = (this.rom[this.pc+1]<<8)|this.rom[this.pc]; return 3; // JMP
+            case 0xEA: return 2; // NOP
+            default: return 1;
+        }
+    }
+
+    writeMem(addr, val) {
+        // Hardware Register Mapping (Simulatie)
+        if (addr === 0x211B) { this.m7.a = val; this.playTone(200 + val); } // Mode 7 Register + Audio Feedback
+        this.ram[addr % 0x20000] = val;
+    }
+
+    updateStatus(val) {
+        if (val === 0) this.status |= 0x02; else this.status &= ~0x02;
+        if (val & 0x80) this.status |= 0x80; else this.status &= ~0x80;
+    }
+
+    // --- MODE 7 RENDERING ---
     render() {
         const screenData = this.imageData.data;
-        
-        // Eenvoudige visualisatie: we renderen een "noise" patroon 
-        // gemixt met RAM data om activiteit te tonen
-        for (let i = 0; i < screenData.length; i += 4) {
-            const ramVal = this.ram[i % 0x2000];
-            screenData[i]     = ramVal || (Math.random() * 50); // R
-            screenData[i + 1] = ramVal ? 100 : (Math.random() * 50); // G
-            screenData[i + 2] = 150; // B
-            screenData[i + 3] = 255; // Alpha
+        const { a, b, c, d, x, y, hoffset, voffset } = this.m7;
+
+        for (let sY = 0; sY < 224; sY++) {
+            for (let sX = 0; sX < 256; sX++) {
+                const rX = sX + hoffset - x;
+                const rY = sY + voffset - y;
+
+                const pX = ((a * rX + b * rY) >> 8) + x;
+                const pY = ((c * rX + d * rY) >> 8) + y;
+
+                const color = (this.rom) ? this.rom[(Math.abs(pX * pY)) % this.rom.length] : 0;
+                const i = (sY * 256 + sX) * 4;
+
+                screenData[i] = color;
+                screenData[i+1] = color * 0.8;
+                screenData[i+2] = 200;
+                screenData[i+3] = 255;
+            }
         }
         this.ctx.putImageData(this.imageData, 0, 0);
     }
@@ -113,55 +126,54 @@ class SNES {
     start() {
         const frame = () => {
             if (!this.running) return;
-            // Voer ~20.000 cycles per frame uit (vloeiende snelheid)
-            for (let i = 0; i < 20000; i++) {
-                this.step();
-            }
+            for (let i = 0; i < 15000; i++) this.step();
             this.render();
             requestAnimationFrame(frame);
         };
         requestAnimationFrame(frame);
     }
 
+    // --- INTERFACE & INPUT ---
     initInput() {
-        const handleInput = (key, isPressed) => {
-            if (this.buttons.hasOwnProperty(key)) {
-                this.buttons[key] = isPressed;
-                if (isPressed) this.vibrate(20);
-            }
-        };
-
         document.querySelectorAll('.ctrl-btn').forEach(btn => {
-            const key = btn.dataset.key;
             btn.addEventListener('touchstart', (e) => {
                 e.preventDefault();
-                handleInput(key, true);
+                if (navigator.vibrate) navigator.vibrate(30);
+                this.buttons[btn.dataset.key] = true;
+                this.playTone(400, 0.05);
             });
-            btn.addEventListener('touchend', () => handleInput(key, false));
-            // Muis ondersteuning voor testen op PC
-            btn.addEventListener('mousedown', () => handleInput(key, true));
-            btn.addEventListener('mouseup', () => handleInput(key, false));
+            btn.addEventListener('touchend', () => this.buttons[btn.dataset.key] = false);
         });
     }
 
-    // Power Toggle
-    togglePower() {
-        this.running = !this.running;
-        this.vibrate(100);
-        document.getElementById('osd').innerText = this.running ? "RUNNING" : "POWER OFF";
-        if (this.running) this.start();
+    saveState() {
+        const state = { ram: Array.from(this.ram), pc: this.pc, m7: this.m7 };
+        localStorage.setItem('echo_snes_state', JSON.stringify(state));
+        alert("State Saved to Echo AI Storage");
+    }
+
+    loadState() {
+        const saved = localStorage.getItem('echo_snes_state');
+        if (saved) {
+            const s = JSON.parse(saved);
+            this.ram = new Uint8Array(s.ram);
+            this.pc = s.pc;
+            this.m7 = s.m7;
+        }
     }
 }
 
+// Bootstrapper
 const snes = new SNES('screen');
 
 document.getElementById('rom-input').addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = (ev) => snes.loadROM(ev.target.result);
-        reader.readAsArrayBuffer(file);
-    }
+    const reader = new FileReader();
+    reader.onload = (ev) => snes.loadROM(ev.target.result);
+    reader.readAsArrayBuffer(e.target.files[0]);
 });
 
-document.getElementById('power-btn').addEventListener('click', () => snes.togglePower());
+document.getElementById('power-btn').addEventListener('click', () => {
+    snes.running = !snes.running;
+    if (snes.running) snes.start();
+    document.getElementById('osd').innerText = snes.running ? "RUNNING" : "PAUSED";
+});
