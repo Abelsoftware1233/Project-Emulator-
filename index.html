@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SNES Emulator | Echo AI</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Echo SNES</h1>
+            <div id="status">Ready to load...</div>
+        </header>
+
+        <main class="emu-viewport">
+            <canvas id="snes-screen" width="256" height="224"></canvas>
+        </main>
+
+        <section class="controls-ui">
+            <div class="file-actions">
+                <label for="rom-upload" class="btn primary">LOAD ROM</label>
+                <input type="file" id="rom-upload" accept=".sfc,.smc" hidden>
+            </div>
+            
+            <div class="playback-controls">
+                <button id="start-btn" class="btn success">START</button>
+                <button id="pause-btn" class="btn">PAUSE</button>
+                <button id="reset-btn" class="btn danger">RESET</button>
+            </div>
+        </section>
+
+        <section class="virtual-gamepad">
+            <div class="d-pad">
+                <button class="btn pad-up" data-key="up">↑</button>
+                <button class="btn pad-left" data-key="left">←</button>
+                <button class="btn pad-right" data-key="right">→</button>
+                <button class="btn pad-down" data-key="down">↓</button>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-a" data-key="a">A</button>
+                <button class="btn btn-b" data-key="b">B</button>
+            </div>
+        </section>
+    </div>
+
+    <script src="emulator.js"></script>
+</body>
+</html>
