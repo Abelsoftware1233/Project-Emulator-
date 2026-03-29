@@ -2,6 +2,7 @@
     --bg: #1a1a1a;
     --panel: #2a2a2a;
     --accent: #ff4757;
+    --btn-shadow: #111;
 }
 
 body, html {
@@ -11,15 +12,18 @@ body, html {
     overflow: hidden; touch-action: none;
 }
 
+/* De Hoofdcontainer */
 .app {
     display: flex; flex-direction: column;
     height: 100vh; padding: 10px; box-sizing: border-box;
 }
 
+/* Het Scherm */
 .display-section {
     position: relative; flex: 1;
     display: flex; justify-content: center; align-items: center;
     background: #000; border: 4px solid #333; border-radius: 10px;
+    overflow: hidden;
 }
 
 #screen {
@@ -32,29 +36,74 @@ body, html {
     font-size: 12px; color: #0f0; font-family: monospace;
 }
 
+/* Systeem Knoppen (Load/Save/Power) */
 .ui-controls {
-    display: flex; justify-content: center; gap: 10px; padding: 15px 0;
+    display: flex; justify-content: center; gap: 8px; padding: 15px 0;
+    flex-wrap: wrap;
 }
 
 .btn {
-    padding: 10px 20px; border-radius: 5px; border: none;
+    padding: 10px 15px; border-radius: 5px; border: none;
     font-weight: bold; cursor: pointer; color: white; background: #444;
+    font-size: 12px; transition: background 0.2s;
 }
 
+.btn:active { background: #666; }
 .danger { background: var(--accent); }
 
-/* Gamepad */
+/* --- HET GAMEPAD GEDEELTE --- */
 .gamepad {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 20px; background: var(--panel); border-radius: 20px 20px 0 0;
+    padding: 25px 20px; background: var(--panel); border-radius: 20px 20px 0 0;
+    margin-top: auto;
 }
 
-.dpad { display: grid; grid-template-areas: ". u ." "l . r" ". d ."; gap: 5px; }
-.up { grid-area: u; } .left { grid-area: l; } .right { grid-area: r; } .down { grid-area: d; }
+/* De D-Pad: Perfect 3x3 Grid */
+.dpad {
+    display: grid;
+    grid-template-columns: repeat(3, 50px);
+    grid-template-rows: repeat(3, 50px);
+    gap: 2px;
+}
 
+/* Basisstijl voor alle controller knoppen */
 .ctrl-btn {
-    width: 55px; height: 55px; border-radius: 50%; border: none;
-    background: #555; color: white; font-weight: bold; font-size: 18px;
+    width: 50px; height: 50px; 
+    background: #333; border: none;
+    color: white; font-weight: bold; font-size: 20px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; touch-action: manipulation;
+    transition: transform 0.05s;
 }
 
-.ctrl-btn:active { background: #888; transform: scale(0.9); }
+/* Specifiek voor de pijltjes */
+.dpad .ctrl-btn {
+    border-radius: 8px;
+    box-shadow: 0 4px 0 var(--btn-shadow);
+}
+
+.dpad-center {
+    background: #333; width: 50px; height: 50px;
+}
+
+/* Actie knoppen (A en B) */
+.action-btns {
+    display: flex; gap: 15px;
+}
+
+.action-btns .ctrl-btn {
+    width: 65px; height: 65px;
+    border-radius: 50%;
+    background: #555;
+    box-shadow: 0 5px 0 #222;
+    font-size: 22px;
+}
+
+/* Indruk-effect voor alle controller knoppen */
+.ctrl-btn:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 var(--btn-shadow) !important;
+    filter: brightness(1.3);
+}
+
+.spacer { width: 50px; height: 50px; }
