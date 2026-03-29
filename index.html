@@ -3,39 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Abel123 SNES Emulator</title>
+    <title>Abel SNES Emulator Core</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="app">
+    <div class="app-container">
         <div class="display-section">
             <canvas id="screen" width="256" height="224"></canvas>
             <div id="osd">NO ROM LOADED</div>
         </div>
 
         <div class="ui-controls">
-            <label class="btn file-btn">
-                LOAD ROM <input type="file" id="rom-input" hidden>
-            </label>
-            <button class="btn" onclick="snes.saveState()">SAVE</button>
-            <button class="btn" onclick="snes.loadState()">LOAD</button>
-            <button id="power-btn" class="btn danger">POWER</button>
+            <div class="control-row">
+                <label class="btn file-btn">
+                    LOAD ROM <input type="file" id="rom-input" hidden>
+                </label>
+                <div class="save-load-group">
+                    <button class="btn tiny" onclick="snes.saveState()">SAVE</button>
+                    <button class="btn tiny" onclick="snes.loadState()">LOAD</button>
+                </div>
+            </div>
+            <button id="power-btn" class="btn danger full-width">POWER</button>
         </div>
 
-        <div class="gamepad-area">
+        <div class="gamepad-viewport">
             <div class="dpad">
-                <div class="spacer"></div>
                 <button class="ctrl-btn up" data-key="up">↑</button>
-                <div class="spacer"></div>
                 <button class="ctrl-btn left" data-key="left">←</button>
-                <div class="dpad-center"></div>
                 <button class="ctrl-btn right" data-key="right">→</button>
-                <div class="spacer"></div>
                 <button class="ctrl-btn down" data-key="down">↓</button>
-                <div class="spacer"></div>
             </div>
             
-            <div class="action-btns">
+            <div class="action-btns-diamond">
+                <button class="ctrl-btn x-btn" data-key="x">X</button>
+                <button class="ctrl-btn y-btn" data-key="y">Y</button>
                 <button class="ctrl-btn b-btn" data-key="b">B</button>
                 <button class="ctrl-btn a-btn" data-key="a">A</button>
             </div>
