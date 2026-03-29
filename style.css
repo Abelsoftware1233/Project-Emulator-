@@ -1,118 +1,60 @@
 :root {
-    --bg-color: #121212;
-    --panel-bg: #1e1e1e;
-    --accent: #4a90e2;
-    --danger: #e74c3c;
-    --success: #2ecc71;
-    --text: #ffffff;
+    --bg: #1a1a1a;
+    --panel: #2a2a2a;
+    --accent: #ff4757;
 }
 
-body {
-    background-color: var(--bg-color);
-    color: var(--text);
-    font-family: 'Inter', -apple-system, sans-serif;
-    margin: 0;
-    overflow: hidden; /* Voorkom scrollen op mobiel */
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
+body, html {
+    margin: 0; padding: 0;
+    height: 100%; background: var(--bg);
+    color: white; font-family: sans-serif;
+    overflow: hidden; touch-action: none;
 }
 
-.app-container {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    padding: 10px;
-    box-sizing: border-box;
+.app {
+    display: flex; flex-direction: column;
+    height: 100vh; padding: 10px; box-sizing: border-box;
 }
 
-header {
-    text-align: center;
-    padding: 5px;
+.display-section {
+    position: relative; flex: 1;
+    display: flex; justify-content: center; align-items: center;
+    background: #000; border: 4px solid #333; border-radius: 10px;
 }
 
-h1 { margin: 0; font-size: 1.2rem; color: var(--accent); }
-#status { font-size: 0.7rem; color: #888; }
-
-.emu-viewport {
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #000;
-    margin: 10px 0;
-    border-radius: 8px;
-    border: 2px solid #333;
-}
-
-#snes-screen {
-    max-width: 100%;
-    max-height: 100%;
+#screen {
+    max-width: 100%; max-height: 100%;
     image-rendering: pixelated;
-    background-color: #000;
 }
 
-.controls-ui {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 20px;
+#osd {
+    position: absolute; top: 10px; left: 10px;
+    font-size: 12px; color: #0f0; font-family: monospace;
 }
 
-.playback-controls, .file-actions {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
+.ui-controls {
+    display: flex; justify-content: center; gap: 10px; padding: 15px 0;
 }
 
 .btn {
-    background: #333;
-    color: white;
-    border: none;
-    padding: 12px 18px;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    touch-action: manipulation; /* Snelle touch response */
-    transition: transform 0.1s, filter 0.1s;
+    padding: 10px 20px; border-radius: 5px; border: none;
+    font-weight: bold; cursor: pointer; color: white; background: #444;
 }
 
-.btn:active {
-    transform: scale(0.95);
-    filter: brightness(1.2);
+.danger { background: var(--accent); }
+
+/* Gamepad */
+.gamepad {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px; background: var(--panel); border-radius: 20px 20px 0 0;
 }
 
-.primary { background: var(--accent); }
-.success { background: var(--success); }
-.danger { background: var(--danger); }
+.dpad { display: grid; grid-template-areas: ". u ." "l . r" ". d ."; gap: 5px; }
+.up { grid-area: u; } .left { grid-area: l; } .right { grid-area: r; } .down { grid-area: d; }
 
-/* Virtuele Gamepad Styling */
-.virtual-gamepad {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
-    background: var(--panel-bg);
-    border-radius: 15px 15px 0 0;
+.ctrl-btn {
+    width: 55px; height: 55px; border-radius: 50%; border: none;
+    background: #555; color: white; font-weight: bold; font-size: 18px;
 }
 
-.d-pad {
-    display: grid;
-    grid-template-areas: ". up ." "left . right" ". down .";
-    gap: 5px;
-}
-.pad-up { grid-area: up; }
-.pad-left { grid-area: left; }
-.pad-right { grid-area: right; }
-.pad-down { grid-area: down; }
-
-.action-buttons {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-.btn-a, .btn-b {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: #555;
-}
+.ctrl-btn:active { background: #888; transform: scale(0.9); }
