@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Abelsoftware123 SNES Hack Core</title>
+    <title>Echo AI - SNES Hack Core</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="app-container">
         <div class="display-section">
             <canvas id="screen" width="256" height="224"></canvas>
-            <div id="osd">SYSTEM READY</div>
+            <div id="osd">SYSTEM READY - WAITING FOR ROM</div>
             
             <div id="debug-info">
                 OFFSET: <span id="val-offset">0</span><br>
@@ -21,14 +21,14 @@
         <div class="ui-controls">
             <div class="control-row">
                 <label class="btn file-btn">
-                    LOAD ROM <input type="file" id="rom-input" hidden>
+                    LOAD .SFC <input type="file" id="rom-upload" accept=".sfc,.smc" hidden>
                 </label>
                 <div class="save-load-group">
                     <button class="btn tiny" onclick="snes.saveState()">SAVE</button>
                     <button class="btn tiny" onclick="snes.loadState()">LOAD</button>
                 </div>
             </div>
-            <button id="power-btn" class="btn danger full-width">POWER / RESET</button>
+            <button id="power-btn" class="btn danger full-width" onclick="location.reload()">RESET CORE</button>
         </div>
 
         <div class="gamepad-viewport">
@@ -51,13 +51,16 @@
     <script src="emulator.js"></script>
     
     <script>
-        // Update de debug waarden op het scherm
+        // Real-time Debug Updates
         setInterval(() => {
             if (window.snes) {
-                document.getElementById('val-offset').innerText = snes.hackOffset || 0;
-                document.getElementById('val-zoom').innerText = snes.m7 ? snes.m7.a : 256;
+                const offsetEl = document.getElementById('val-offset');
+                const zoomEl = document.getElementById('val-zoom');
+                
+                if (offsetEl) offsetEl.innerText = snes.hackOffset || 0;
+                if (zoomEl) zoomEl.innerText = snes.m7 ? snes.m7.a : 256;
             }
-        }, 100);
+        }, 50); // Iets snellere update voor vloeiende debug info
     </script>
 </body>
 </html>
