@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SNES Emulator – FSC Player</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+<div class="console-shell">
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="logo">
+      <span class="logo-super">SUPER</span>
+      <span class="logo-fsc">FSC</span>
+      <span class="logo-emu">EMULATOR</span>
+    </div>
+    <div class="top-controls">
+      <button class="btn-pill" id="btn-fullscreen" title="Volledig scherm">⛶</button>
+      <button class="btn-pill" id="btn-mute" title="Geluid">🔊</button>
+    </div>
+  </div>
+
+  <!-- SCREEN AREA -->
+  <div class="screen-bezel">
+    <div class="screen-inner">
+      <canvas id="snes-canvas" width="256" height="224"></canvas>
+      <div class="screen-overlay" id="overlay">
+        <div class="overlay-content">
+          <div class="overlay-icon">🎮</div>
+          <p class="overlay-title">SNES FSC Emulator</p>
+          <p class="overlay-sub">Laad een .fsc ROM-bestand om te beginnen</p>
+          <label class="load-btn" for="rom-input">
+            <span>📂 ROM Laden</span>
+            <input type="file" id="rom-input" accept=".fsc,.smc,.sfc,.rom,.bin" />
+          </label>
+        </div>
+      </div>
+      <div class="scanlines"></div>
+      <div class="screen-glare"></div>
+    </div>
+    <!-- FPS / STATUS -->
+    <div class="status-bar">
+      <span id="status-text">Geen ROM geladen</span>
+      <span id="fps-counter">-- FPS</span>
+    </div>
+  </div>
+
+  <!-- SAVE / LOAD ROW -->
+  <div class="save-load-row">
+    <button class="sl-btn" id="btn-load-state">
+      <svg viewBox="0 0 24 24"><path d="M12 2v14M5 9l7 7 7-7"/><path d="M3 20h18"/></svg>
+      LOAD
+    </button>
+    <div class="sl-slots">
+      <button class="slot-btn active" data-slot="1">1</button>
+      <button class="slot-btn" data-slot="2">2</button>
+      <button class="slot-btn" data-slot="3">3</button>
+      <button class="slot-btn" data-slot="4">4</button>
+    </div>
+    <button class="sl-btn" id="btn-save-state">
+      <svg viewBox="0 0 24 24"><path d="M12 22V8M5 15l7-7 7 7"/><path d="M3 4h18"/></svg>
+      SAVE
+    </button>
+  </div>
+
+  <!-- CONTROLLER -->
+  <div class="controller">
+
+    <!-- CARTRIDGE LABEL -->
+    <div class="cart-label">
+      <span id="game-title">— geen spel —</span>
+      <div class="cart-dots">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+
+    <!-- LEFT SIDE: D-PAD -->
+    <div class="ctrl-left">
+      <div class="dpad">
+        <button class="dpad-btn dpad-up"    data-key="ArrowUp">▲</button>
+        <button class="dpad-btn dpad-left"  data-key="ArrowLeft">◀</button>
+        <button class="dpad-btn dpad-center"></button>
+        <button class="dpad-btn dpad-right" data-key="ArrowRight">▶</button>
+        <button class="dpad-btn dpad-down"  data-key="ArrowDown">▼</button>
+      </div>
+    </div>
+
+    <!-- CENTER: SELECT / START -->
+    <div class="ctrl-center">
+      <button class="meta-btn" data-key="Backspace" id="btn-select">SELECT</button>
+      <button class="meta-btn" data-key="Enter"     id="btn-start">START</button>
+    </div>
+
+    <!-- RIGHT SIDE: ABXY -->
+    <div class="ctrl-right">
+      <div class="face-buttons">
+        <button class="face-btn btn-x" data-key="x">X</button>
+        <div class="face-row">
+          <button class="face-btn btn-y" data-key="y">Y</button>
+          <button class="face-btn btn-a" data-key="a">A</button>
+        </div>
+        <button class="face-btn btn-b" data-key="b">B</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SHOULDER BUTTONS -->
+  <div class="shoulder-row">
+    <button class="shoulder-btn" data-key="q">L</button>
+    <div class="shoulder-center-gap"></div>
+    <button class="shoulder-btn" data-key="w">R</button>
+  </div>
+
+  <!-- BOTTOM BAR -->
+  <div class="bottom-bar">
+    <label class="mini-btn" for="rom-input2" title="ROM wisselen">
+      📁 ROM
+      <input type="file" id="rom-input2" accept=".fsc,.smc,.sfc,.rom,.bin" />
+    </label>
+    <button class="mini-btn" id="btn-reset">↺ RESET</button>
+    <button class="mini-btn" id="btn-pause">⏸ PAUSE</button>
+    <button class="mini-btn" id="btn-speed">⚡ ×1</button>
+  </div>
+
+</div>
+
+<!-- TOAST NOTIFICATIONS -->
+<div id="toast-container"></div>
+
+<script src="emulator.js"></script>
+</body>
+</html>
